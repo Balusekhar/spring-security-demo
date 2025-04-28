@@ -21,26 +21,27 @@ import java.util.UUID;
 public class UserEntity implements UserDetails {
 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    private String userName;
-    private String password;
-    private int age;
+  private String email;
+  private String password;
+  private String userName;
+  private int age;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
 
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
+  @Override
+  public String getPassword() {
+    return this.password;
+  }
 
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
+  @Override
+  public String getUsername() {
+    return this.email;
+  }
 }
