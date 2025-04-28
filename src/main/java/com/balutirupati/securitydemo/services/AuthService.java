@@ -23,7 +23,7 @@ public class AuthService {
 
   public String login(LoginDto loginDto) {
     Optional<UserEntity> user = userRepository.findByEmail(loginDto.getEmail());
-    if (user.isEmpty()) {
+    if (user.isPresent()) {
       throw new BadCredentialsException("User not found");
     }
     Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken

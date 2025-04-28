@@ -1,5 +1,7 @@
 package com.balutirupati.securitydemo.config;
 
+import com.balutirupati.securitydemo.filters.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,29 +9,31 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
+
+  private final JwtFilter jwtFilter;
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/auth/login", "/auth/signup").permitAll()
-        .anyRequest().authenticated()  // <-- any other request needs authentication
+        .anyRequest().authenticated()
       )
       .csrf(AbstractHttpConfigurer::disable)
+      .sessionManagement(session -> session
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      )
       .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
       .build();
-  }
-
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
   }
 
   @Bean

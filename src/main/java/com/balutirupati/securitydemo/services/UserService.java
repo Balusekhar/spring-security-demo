@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +41,12 @@ public class UserService implements UserDetailsService {
     return modelMapper.map(createdUser, UserDto.class);
   }
 
+  public UserEntity getUserById(UUID userId) {
+    return userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+  }
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    return userRepository.findByEmail(username).orElseThrow(() -> new BadCredentialsException("User not found"));
   }
 }

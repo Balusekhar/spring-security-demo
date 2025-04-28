@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -30,7 +31,7 @@ public class JwtService {
       .compact();
   }
 
-  public String parseJwt(String token) {
+  public UUID parseJwt(String token) {
     SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
 
     Claims claims = Jwts.parserBuilder()
@@ -39,6 +40,7 @@ public class JwtService {
       .parseClaimsJws(token)
       .getBody();
 
-    return claims.get("id").toString();
+    String idString = claims.get("id", String.class);
+    return UUID.fromString(idString);
   }
 }
