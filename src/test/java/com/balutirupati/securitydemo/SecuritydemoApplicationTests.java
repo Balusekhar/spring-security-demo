@@ -21,7 +21,7 @@ class SecuritydemoApplicationTests {
   @Test
   void testJWT() {
     UserEntity user = new UserEntity(UUID.fromString("48333906-df77-41c3-8954-77a754eeee8e"), "balu@gmail.com", "balu", "1234", 8);
-    String token = JwtService.generateJwtToken(user);
+    String token = JwtService.generateAccessToken(user);
     System.out.println(token);
 
     String id = JwtService.parseJwt(token);

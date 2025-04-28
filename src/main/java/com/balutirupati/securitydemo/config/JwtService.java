@@ -19,14 +19,26 @@ public class JwtService {
   @Value("${jwt.secret}")
   private String jwtSecret;
 
-  public String generateJwtToken(UserEntity user) {
+  public String generateAccessToken(UserEntity user) {
     SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
 
     return Jwts.builder()
       .setSubject(user.getEmail())
       .claim("id", user.getId())
       .setIssuedAt(new Date())
-      .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60)))
+      .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 5)))
+      .signWith(key, SignatureAlgorithm.HS256)
+      .compact();
+  }
+
+  public String generateRefreshToken(UserEntity user) {
+    SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+
+    return Jwts.builder()
+      .setSubject(user.getEmail())
+      .claim("id", user.getId())
+      .setIssuedAt(new Date())
+      .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24)))
       .signWith(key, SignatureAlgorithm.HS256)
       .compact();
   }
