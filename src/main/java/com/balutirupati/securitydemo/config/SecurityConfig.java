@@ -1,6 +1,7 @@
 package com.balutirupati.securitydemo.config;
 
 import com.balutirupati.securitydemo.filters.JwtFilter;
+import com.balutirupati.securitydemo.handlers.Oauth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtFilter jwtFilter;
+  private final Oauth2SuccessHandler oauth2SuccessHandler;
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,6 +35,11 @@ public class SecurityConfig {
       )
       .headers(headers -> headers.frameOptions(frame -> frame.disable()))
       .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+      .oauth2Login(
+        oauthConfig -> oauthConfig
+          .failureUrl("/auth/login?error=true")
+          .successHandler(oauth2SuccessHandler)
+      )
       .build();
   }
 

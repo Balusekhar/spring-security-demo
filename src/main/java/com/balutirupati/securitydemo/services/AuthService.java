@@ -23,6 +23,7 @@ public class AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
   private final UserService userService;
+  private final SessionService sessionService;
 
   public LoginResponseDto login(LoginDto loginDto) {
     Optional<UserEntity> user = userRepository.findByEmail(loginDto.getEmail());
@@ -35,10 +36,13 @@ public class AuthService {
     UserEntity userEntityDetails = (UserEntity) auth.getPrincipal();
     String accessToken = jwtService.generateAccessToken(userEntityDetails);
     String refreshToken = jwtService.generateRefreshToken(userEntityDetails);
+    sessionService.generateNewSession(userEntityDetails, refreshToken);
     return new LoginResponseDto(userEntityDetails.getId(), accessToken, refreshToken);
   }
+
   public LoginResponseDto refresh(String refreshToken) {
     UUID userId = jwtService.parseJwt(refreshToken);
+    sessionService.validSession(refreshToken);
     if (userId == null) {
       throw new BadCredentialsException("Invalid refresh token");
     }
