@@ -31,7 +31,7 @@ public class PostController {
 
   @PostMapping(value = "/posts")
   @PreAuthorize("hasRole('CREATOR')")
-  public PostEntity creaatePosts(@RequestBody PostEntity postDetails) {
+  public PostEntity createPosts(@RequestBody PostEntity postDetails) {
     return postService.createpost(postDetails);
   }
 }
