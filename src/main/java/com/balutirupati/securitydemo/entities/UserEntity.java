@@ -1,19 +1,19 @@
 package com.balutirupati.securitydemo.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.balutirupati.securitydemo.Roles;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -32,9 +32,15 @@ public class UserEntity implements UserDetails {
   private String userName;
   private int age;
 
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Enumerated(EnumType.STRING)
+  private Set<Roles> roles;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
+    return roles.stream()
+      .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+      .collect(Collectors.toSet());
   }
 
   @Override
