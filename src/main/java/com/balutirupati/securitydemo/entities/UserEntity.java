@@ -1,6 +1,7 @@
 package com.balutirupati.securitydemo.entities;
 
-import com.balutirupati.securitydemo.Roles;
+import com.balutirupati.securitydemo.enums.Permissions;
+import com.balutirupati.securitydemo.enums.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,11 +37,18 @@ public class UserEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Set<Roles> roles;
 
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Enumerated(EnumType.STRING)
+  private Set<Permissions> permissions;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return roles.stream()
+    Set<SimpleGrantedAuthority> authorities = roles.stream()
       .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
       .collect(Collectors.toSet());
+    permissions.forEach(permission ->
+      authorities.add(new SimpleGrantedAuthority(permission.name())));
+    return authorities;
   }
 
   @Override

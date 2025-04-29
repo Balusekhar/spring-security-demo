@@ -1,5 +1,6 @@
 package com.balutirupati.securitydemo.config;
 
+import com.balutirupati.securitydemo.enums.Permissions;
 import com.balutirupati.securitydemo.filters.JwtFilter;
 import com.balutirupati.securitydemo.handlers.Oauth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.balutirupati.securitydemo.Roles.ADMIN;
+import static com.balutirupati.securitydemo.enums.Roles.ADMIN;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/auth/login", "/auth/signup").permitAll()
         .requestMatchers("/posts/**").hasRole(ADMIN.name())
+        .requestMatchers("/posts/**").hasAnyAuthority(Permissions.POST_READ.name(), Permissions.POST_WRITE.name())
         .anyRequest().authenticated()
       )
       .csrf(AbstractHttpConfigurer::disable)
